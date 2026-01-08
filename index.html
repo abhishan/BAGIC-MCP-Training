@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copilot Studio Training Hub</title>
+    <!-- Google Fonts: Inter and Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                    <rect width="11" height="11" />
+                    <rect x="13" width="11" height="11" />
+                    <rect y="13" width="11" height="11" />
+                    <rect x="13" y="13" width="11" height="11" />
+                </svg>
+                <span>Copilot Studio Labs</span>
+            </div>
+            <button class="theme-btn" onclick="toggleTheme()" id="themeSwitcher">
+                <span id="themeIcon">🌙</span>
+                <span id="themeText">Dark Mode</span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Master the Future of AI</h1>
+                <p>Self-paced, hands-on training labs to help you build, deploy, and manage intelligent agents with
+                    Microsoft Copilot Studio.</p>
+            </div>
+        </section>
+
+        <section class="container">
+            <div class="grid">
+                <!-- Lab 1 -->
+                <div class="card">
+                    <div>
+                        <span class="tag beginner">Beginner</span>
+                    </div>
+                    <h3>Introduction to Copilot Studio</h3>
+                    <p>Learn the core concepts of conversational AI. Build your first bot, create topics, and understand
+                        entities in under an hour.</p>
+                    <div class="meta">
+                        <span>⏱ 45 mins</span>
+                        <span>🎯 5 Modules</span>
+                    </div>
+                    <a href="training.html?id=1" class="btn">Start Lab</a>
+                </div>
+
+                <!-- Lab 2 -->
+                <div class="card">
+                    <div>
+                        <span class="tag intermediate">Intermediate</span>
+                    </div>
+                    <h3>Generative Answers & AI</h3>
+                    <p>Unleash the power of GPT. Connect your agent to SharePoint, public websites, and offline files
+                        for instant knowledge retrieval.</p>
+                    <div class="meta">
+                        <span>⏱ 60 mins</span>
+                        <span>🎯 4 Modules</span>
+                    </div>
+                    <a href="training.html?id=2" class="btn">Start Lab</a>
+                </div>
+
+                <!-- Lab 3 -->
+                <div class="card">
+                    <div>
+                        <span class="tag advanced">Advanced</span>
+                    </div>
+                    <h3>Power Automate Workflows</h3>
+                    <p>Go beyond chat. Integrate complex business logic and external APIs using Power Automate flows
+                        within your AI conversations.</p>
+                    <div class="meta">
+                        <span>⏱ 90 mins</span>
+                        <span>🎯 6 Modules</span>
+                    </div>
+                    <a href="training.html?id=3" class="btn">Start Lab</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Microsoft Copilot Studio Training. Built for Excellence.</p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+
+            applyTheme(target);
+        }
+
+        function applyTheme(theme) {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+
+            if (theme === 'dark') {
+                icon.innerText = '☀️';
+                text.innerText = 'Light Mode';
+            } else {
+                icon.innerText = '🌙';
+                text.innerText = 'Dark Mode';
+            }
+        }
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+    </script>
+</body>
+
+</html>
