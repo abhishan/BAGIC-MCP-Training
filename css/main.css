@@ -123,8 +123,8 @@ header {
 .hero h1 {
     font-size: 3.5rem;
     font-weight: 700;
-    line-height: 1.1;
-    margin-bottom: 20px;
+    line-height: normal;
+    margin-bottom: 10px;
     background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
     -webkit-background-clip: text;
     background-clip: text;
