@@ -12,9 +12,33 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
         rel="stylesheet">
     <style>
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: var(--sticky-header-height);
+        }
+
+        :root {
+            --sticky-header-height: 250px;
+            /* Approximate height of sticky header + hero */
+        }
+
+        .sticky-top-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--color-bg);
+            box-shadow: var(--shadow-soft);
+        }
+
+        header {
+            border-bottom: none !important;
+            backdrop-filter: none !important;
+            background: transparent !important;
+        }
+
         .lab-hero {
             background: var(--color-bg-alt);
-            padding: 40px 0;
+            padding: 24px 0;
             border-bottom: 1px solid var(--color-border);
             margin-bottom: 0;
         }
@@ -59,8 +83,8 @@
 
         .sidebar {
             position: sticky;
-            top: 100px;
-            height: calc(100vh - 120px);
+            top: calc(var(--sticky-header-height) + 20px);
+            height: calc(100vh - var(--sticky-header-height) - 40px);
             overflow-y: auto;
             padding-right: 10px;
         }
@@ -221,44 +245,42 @@
 </head>
 
 <body>
-    <header>
-        <div class="container header-content">
-            <div class="logo">
-                <a href="../index.html"
-                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                        <rect width="11" height="11" />
-                        <rect x="13" width="11" height="11" />
-                        <rect y="13" width="11" height="11" />
-                        <rect x="13" y="13" width="11" height="11" />
-                    </svg>
-                    <span>Copilot Studio Labs</span>
-                </a>
-            </div>
-            <button class="theme-btn" onclick="toggleTheme()" id="themeSwitcher">
-                <span id="themeIcon">🌙</span>
-                <span id="themeText">Dark Mode</span>
-            </button>
-        </div>
-    </header>
-
-    <section class="lab-hero">
-        <div class="container">
-            <div class="hero-flex">
-                <div>
-                    <h1>Build a Web-Grounded Copilot Studio Agent</h1>
-                    <p class="subtitle">Lab 01: Creating a Non-Life Insurance Catalogue Assistant</p>
+    <div class="sticky-top-header">
+        <header>
+            <div class="container header-content">
+                <div class="logo">
+                    <a href="../index.html"
+                        style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+                        <img src="../assets/SaxonLogo.png" alt="Saxon AI" style="height: 40px; width: auto;">
+                        <span>Copilot Studio Labs</span>
+                    </a>
                 </div>
-                <div class="hero-controls">
-                    <div class="timer-display" id="mainTimer">00:00:00</div>
-                    <div class="button-group">
-                        <button id="btnStart" class="btn" onclick="startLab()">Start Training</button>
-                        <button id="btnEnd" class="btn btn-secondary" onclick="endLab()" disabled>End Training</button>
+                <button class="theme-btn" onclick="toggleTheme()" id="themeSwitcher">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeText">Dark Mode</span>
+                </button>
+            </div>
+        </header>
+
+        <section class="lab-hero">
+            <div class="container">
+                <div class="hero-flex">
+                    <div>
+                        <h1>Build a Web-Grounded Copilot Studio Agent</h1>
+                        <p class="subtitle">Lab 01: Creating a Non-Life Insurance Catalogue Assistant</p>
+                    </div>
+                    <div class="hero-controls">
+                        <div class="timer-display" id="mainTimer">00:00:00</div>
+                        <div class="button-group">
+                            <button id="btnStart" class="btn" onclick="startLab()">Start Training</button>
+                            <button id="btnEnd" class="btn btn-secondary" onclick="endLab()" disabled>End
+                                Training</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
     <main class="container lab-layout">
         <!-- Left Sidebar -->
@@ -415,7 +437,7 @@
             btnEnd.classList.add('highlight');
 
             // Scroll to content
-            document.getElementById('instructions').scrollIntoView({ behavior: 'smooth' });
+            //document.getElementById('instructions').scrollIntoView({ behavior: 'smooth' });
         }
 
         function updateTimer() {
