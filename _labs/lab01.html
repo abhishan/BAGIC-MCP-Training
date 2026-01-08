@@ -241,6 +241,36 @@
                 display: none;
             }
         }
+
+        .lab-image {
+            margin: 32px 0;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .lab-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .reflection-questions {
+            background: var(--color-bg-alt);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            margin-top: 24px;
+        }
+
+        .reflection-questions ul {
+            margin-top: 12px;
+            padding-left: 20px;
+        }
+
+        .reflection-questions li {
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 
@@ -297,10 +327,13 @@
 
                 <div style="margin-top: 24px; font-size: 0.9rem;">
                     <p><strong>Level:</strong> 100</p>
+                    <p><strong>Persona:</strong> Basic Maker</p>
                     <p><strong>Duration:</strong> 20 mins</p>
                     <hr style="margin: 15px 0; border: none; border-top: 1px solid var(--color-border);">
-                    <p style="color: var(--color-text-secondary); font-size: 0.85rem;">Goal: Create a declarative agent
-                        grounded in web-based knowledge.</p>
+                    <p style="color: var(--color-text-secondary); font-size: 0.85rem;"><strong>Purpose:</strong> After
+                        completing this lab, attendees will be able to create and publish a declarative Copilot Studio
+                        agent grounded in web-based knowledge to answer insurance product queries accurately and
+                        concisely.</p>
                 </div>
             </div>
 
@@ -356,7 +389,57 @@
                     <tr>
                         <td style="border: 1px solid var(--color-border); padding: 12px;">Grounding</td>
                         <td style="border: 1px solid var(--color-border); padding: 12px;">Ensures responses are anchored
-                            in verified data.</td>
+                            in verified data, reducing hallucinations and increasing trust.</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Agent Instructions</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Define persona, tone,
+                            behavior, and content boundaries for consistent responses.</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Test Canvas</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Provides a safe environment to
+                            validate accuracy and behavior before publishing.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="prerequisites">✅ Prerequisites</h2>
+            <ul>
+                <li>Access to <strong>Microsoft Copilot Studio</strong></li>
+                <li>Azure AD account with permission to create agents</li>
+                <li>Internet access to public websites</li>
+            </ul>
+
+            <h2 id="targets">🎯 Summary of Targets</h2>
+            <p>By the end of this lab, you will be able to:</p>
+            <ul>
+                <li>Create a declarative Copilot Studio agent</li>
+                <li>Configure agent instructions for a professional insurance persona</li>
+                <li>Add and validate a web-based knowledge source</li>
+                <li>Test and publish the agent for user consumption</li>
+            </ul>
+
+            <h2 id="use-cases">🧩 Use Cases Covered</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                <thead>
+                    <tr style="background: var(--color-bg-alt);">
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Step</th>
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Use Case
+                        </th>
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Value added
+                        </th>
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Effort</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">1</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Agent with Web-Based Knowledge
+                        </td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Enables users to query
+                            non-life insurance offerings using authoritative web data</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">20 min</td>
                     </tr>
                 </tbody>
             </table>
@@ -367,31 +450,107 @@
             <ol>
                 <li>Open a web browser and navigate to the <strong>Copilot Studio portal</strong>.</li>
                 <li>Sign in using your <strong>Azure AD account</strong>.</li>
+                <li>Confirm that you have access to the correct environment.</li>
             </ol>
+            <div class="lab-image">
+                <img src="../labs/images/common/CopilotHome.png" alt="Copilot Home">
+            </div>
 
             <h3>Step B — Create the Agent</h3>
             <ol>
                 <li>Select <strong>Create</strong> → <strong>Copilot</strong>.</li>
                 <li>Choose the <strong>Declarative</strong> agent type.</li>
-                <li>Enter: <strong>NonLife Catalogue Agent</strong>.</li>
+                <li>Enter the following details:
+                    <ul>
+                        <li><strong>Name:</strong> NonLife Catalogue Agent</li>
+                        <li><strong>Description:</strong> Agent that retrieves and answers questions about non-life
+                            insurance offerings</li>
+                        <li><strong>Language:</strong> English</li>
+                    </ul>
+                </li>
+                <li>Select <strong>Create</strong>.</li>
             </ol>
+            <div class="lab-image">
+                <img src="../labs/images/lab01/StepB.png" alt="Create Agent Step">
+            </div>
+
+            <h3>Step C — Define Instructions</h3>
+            <p>Navigate to <strong>Settings</strong> → <strong>Instructions</strong> and configure the agent using the
+                following structure:</p>
+            <ul>
+                <li><strong>Role:</strong> Insurance Product Specialist</li>
+                <li><strong>Tone:</strong> Concise and professional</li>
+                <li><strong>Knowledge usage rule:</strong> Answer only using configured knowledge sources</li>
+                <li><strong>Citation rule:</strong> Reference information derived from web sources</li>
+                <li><strong>Content constraints:</strong> Avoid speculation or unsupported assumptions</li>
+            </ul>
 
             <div class="callout tip">
                 <span>💡</span>
                 <div><strong>Tip:</strong> Clear, well-structured instructions ensure consistent and trustworthy
-                    responses.</div>
+                    responses across all user interactions.</div>
             </div>
 
             <h3>Step D — Add Web-Based Knowledge Source</h3>
             <ol>
                 <li>Navigate to <strong>Knowledge</strong> → <strong>Add knowledge source</strong>.</li>
                 <li>Select <strong>Website</strong>.</li>
-                <li>URL: <code>https://www.bajajgeneralinsurance.com/</code></li>
+                <li>Configure the source as follows:
+                    <ul>
+                        <li><strong>URL:</strong> https://www.bajajgeneralinsurance.com/</li>
+                        <li><strong>Domain:</strong> bajajgeneralinsurance.com</li>
+                        <li><strong>Crawl depth:</strong> 2 or 3</li>
+                    </ul>
+                </li>
+                <li>Save and allow the crawler to index the content.</li>
             </ol>
+            <div class="lab-image">
+                <img src="../labs/images/lab01/StepD-1.png" alt="Add Knowledge Source">
+            </div>
+            <div class="lab-image">
+                <img src="../labs/images/lab01/StepD-2.png" alt="Configure Website Source">
+            </div>
 
             <div class="callout important">
                 <span>⚠️</span>
-                <div><strong>Important:</strong> Limiting crawl depth helps balance coverage with relevance.</div>
+                <div><strong>Important:</strong> Limiting crawl depth helps balance coverage with relevance and
+                    performance.</div>
+            </div>
+
+            <h3>Step E — Validate Using Test Canvas</h3>
+            <ol>
+                <li>Open the <strong>Test Canvas</strong>.</li>
+                <li>Ask sample questions related to non-life insurance offerings.</li>
+                <li>Validate that responses are:
+                    <ul>
+                        <li>Accurate</li>
+                        <li>Grounded in website content</li>
+                        <li>Aligned with the defined persona and tone</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>Step F — Publish the Agent</h3>
+            <ol>
+                <li>Once validation is complete, select <strong>Publish</strong>.</li>
+                <li>Make the agent available to the intended channels (e.g., Web or Teams).</li>
+            </ol>
+
+            <h2 id="understanding">🧠 Test Your Understanding</h2>
+            <p><strong>Key takeaways:</strong></p>
+            <ul>
+                <li>Web-grounded agents provide reliable, authoritative responses</li>
+                <li>Declarative agents are ideal for low-complexity, knowledge-based use cases</li>
+                <li>Instruction quality directly impacts response consistency and trust</li>
+            </ul>
+
+            <div class="reflection-questions">
+                <h4>Reflection questions:</h4>
+                <ul>
+                    <li>How would you adjust crawl depth for broader or narrower knowledge coverage?</li>
+                    <li>What additional instruction rules could further reduce ambiguity?</li>
+                    <li>Which other public websites could enhance this agent’s usefulness?</li>
+                </ul>
             </div>
 
             <h2 id="summary">🔁 Summary of Learnings</h2>
@@ -399,7 +558,22 @@
                 <li>Built a declarative Copilot Studio agent</li>
                 <li>Configured a professional insurance persona</li>
                 <li>Grounded responses using web-based knowledge</li>
+                <li>Tested and published the agent successfully</li>
             </ul>
+
+            <h2 id="conclusions">📌 Conclusions & Recommendations</h2>
+            <div class="callout important">
+                <span>ℹ️</span>
+                <div>
+                    <strong>Recommendations:</strong>
+                    <ul>
+                        <li>Regularly review and update web sources</li>
+                        <li>Keep instructions concise and explicit</li>
+                        <li>Test frequently to ensure accuracy and relevance</li>
+                        <li>Start simple before adding complexity</li>
+                    </ul>
+                </div>
+            </div>
         </article>
 
         <!-- Right Sidebar (ToC) -->
@@ -412,10 +586,21 @@
                 <a href="#concepts" class="toc-link"
                     style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Core
                     Concepts</a>
+                <a href="#prerequisites" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Prerequisites</a>
+                <a href="#targets" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Targets</a>
+                <a href="#use-cases" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Use
+                    Cases</a>
                 <a href="#instructions" class="toc-link"
                     style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Instructions</a>
+                <a href="#understanding" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Understanding</a>
                 <a href="#summary" class="toc-link"
                     style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Summary</a>
+                <a href="#conclusions" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Conclusions</a>
             </nav>
         </aside>
     </main>

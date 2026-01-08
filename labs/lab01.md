@@ -112,6 +112,8 @@ Create and publish a **NonLife Catalogue Agent** that retrieves answers from the
 2. Sign in using your **Azure AD account**.
 3. Confirm that you have access to the correct environment.
 
+![alt text](labs/images/common/CopilotHome.png)
+
 ---
 
 ### Step B — Create the Agent
