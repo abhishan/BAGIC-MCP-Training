@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 01: Build a Web-Grounded Copilot Agent | Copilot Studio Hub</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .lab-hero {
+            background: var(--color-bg-alt);
+            padding: 40px 0;
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 0;
+        }
+
+        .hero-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .hero-flex h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: var(--color-text);
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .hero-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 16px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .lab-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 40px;
+            padding-top: 40px;
+            align-items: start;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: 10px;
+        }
+
+        .lab-content {
+            background: var(--color-bg);
+            padding-bottom: 100px;
+        }
+
+        .lab-content h2 {
+            margin: 40px 0 20px;
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 10px;
+        }
+
+        .lab-content h3 {
+            margin: 30px 0 15px;
+            font-size: 1.4rem;
+            color: var(--color-primary);
+        }
+
+        .callout {
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin: 24px 0;
+            border-left: 4px solid;
+            display: flex;
+            gap: 12px;
+        }
+
+        .callout.tip {
+            background: var(--beginner-bg);
+            border-color: var(--beginner-text);
+            color: var(--beginner-text);
+        }
+
+        .callout.important {
+            background: var(--advanced-bg);
+            border-color: var(--advanced-text);
+            color: var(--advanced-text);
+        }
+
+        .timer-display {
+            font-family: 'Outfit', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            background: var(--color-bg);
+            padding: 8px 20px;
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--color-primary);
+            min-width: 160px;
+            text-align: center;
+        }
+
+        .progress-box {
+            background: var(--color-bg-alt);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            margin-bottom: 24px;
+        }
+
+        .summary-box {
+            display: none;
+            background: linear-gradient(135deg, var(--beginner-bg), var(--intermediate-bg));
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--color-primary);
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .summary-box h4 {
+            margin-bottom: 16px;
+            color: var(--color-primary);
+            font-size: 1.2rem;
+        }
+
+        .summary-item {
+            margin-bottom: 12px;
+        }
+
+        .summary-label {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            display: block;
+        }
+
+        .summary-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--color-text);
+        }
+
+        .badge-display {
+            margin-top: 20px;
+            text-align: center;
+            padding: 16px;
+            background: var(--color-bg);
+            border-radius: var(--radius-md);
+            border: 1px dashed var(--color-primary);
+        }
+
+        .badge-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .btn-secondary {
+            background: var(--color-bg-alt);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary.highlight {
+            background: var(--advanced-bg);
+            color: var(--advanced-text);
+            border-color: var(--advanced-text);
+            box-shadow: 0 0 15px rgba(164, 38, 44, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-flex {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero-controls {
+                align-items: flex-start;
+            }
+
+            .lab-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <a href="../index.html"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                        <rect width="11" height="11" />
+                        <rect x="13" width="11" height="11" />
+                        <rect y="13" width="11" height="11" />
+                        <rect x="13" y="13" width="11" height="11" />
+                    </svg>
+                    <span>Copilot Studio Labs</span>
+                </a>
+            </div>
+            <button class="theme-btn" onclick="toggleTheme()" id="themeSwitcher">
+                <span id="themeIcon">🌙</span>
+                <span id="themeText">Dark Mode</span>
+            </button>
+        </div>
+    </header>
+
+    <section class="lab-hero">
+        <div class="container">
+            <div class="hero-flex">
+                <div>
+                    <h1>Build a Web-Grounded Copilot Studio Agent</h1>
+                    <p class="subtitle">Lab 01: Creating a Non-Life Insurance Catalogue Assistant</p>
+                </div>
+                <div class="hero-controls">
+                    <div class="timer-display" id="mainTimer">00:00:00</div>
+                    <div class="button-group">
+                        <button id="btnStart" class="btn" onclick="startLab()">Start Training</button>
+                        <button id="btnEnd" class="btn btn-secondary" onclick="endLab()" disabled>End Training</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container lab-layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar" id="leftSidebar">
+            <div class="progress-box" id="progressBox">
+                <h4 style="margin-bottom: 8px;">Your Progress</h4>
+                <div class="progress-bar"
+                    style="height: 8px; background: var(--color-border); border-radius: 4px; margin: 12px 0; overflow: hidden;">
+                    <div id="progressFill"
+                        style="height: 100%; background: var(--color-primary); width: 0%; transition: width 0.3s ease;">
+                    </div>
+                </div>
+                <small id="progressText">0% Completed</small>
+
+                <div style="margin-top: 24px; font-size: 0.9rem;">
+                    <p><strong>Level:</strong> 100</p>
+                    <p><strong>Duration:</strong> 20 mins</p>
+                    <hr style="margin: 15px 0; border: none; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-secondary); font-size: 0.85rem;">Goal: Create a declarative agent
+                        grounded in web-based knowledge.</p>
+                </div>
+            </div>
+
+            <div class="summary-box" id="summaryBox">
+                <h4>🎉 Lab Completed!</h4>
+                <div class="summary-item">
+                    <span class="summary-label">Time Taken</span>
+                    <span class="summary-value" id="finalTime">00:00:00</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Badge Earned</span>
+                    <div class="badge-display">
+                        <span class="badge-icon">🎖️</span>
+                        <span class="summary-value">Copilot White Belt</span>
+                    </div>
+                </div>
+                <button class="btn" onclick="window.location.href='../index.html'"
+                    style="width: 100%; margin-top: 20px;">Return to Hub</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <article class="lab-content" id="mainContent">
+            <h2 id="introduction">🌐 Introduction</h2>
+            <p>In this lab, you will build a <strong>declarative Copilot Studio agent</strong> designed to retrieve and
+                answer questions related to <strong>non-life insurance offerings</strong> by grounding responses in
+                publicly available content from the Bajaj General Insurance website.</p>
+            <p>The agent will function as a <strong>Non-Life Catalogue Assistant</strong>, helping users discover and
+                understand insurance products using concise, professional responses backed by authoritative web data.
+            </p>
+
+            <h2 id="concepts">🎓 Core Concepts Overview</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                <thead>
+                    <tr style="background: var(--color-bg-alt);">
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Concept</th>
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Why it
+                            matters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Declarative Agent</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Enables fast creation of
+                            agents using instructions and knowledge sources.</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Web-based Knowledge Source
+                        </td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Allows agents to retrieve
+                            answers from publicly accessible websites.</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Grounding</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Ensures responses are anchored
+                            in verified data.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="instructions">🛠️ Step-by-Step Instructions</h2>
+
+            <h3>Step A — Access the Platform</h3>
+            <ol>
+                <li>Open a web browser and navigate to the <strong>Copilot Studio portal</strong>.</li>
+                <li>Sign in using your <strong>Azure AD account</strong>.</li>
+            </ol>
+
+            <h3>Step B — Create the Agent</h3>
+            <ol>
+                <li>Select <strong>Create</strong> → <strong>Copilot</strong>.</li>
+                <li>Choose the <strong>Declarative</strong> agent type.</li>
+                <li>Enter: <strong>NonLife Catalogue Agent</strong>.</li>
+            </ol>
+
+            <div class="callout tip">
+                <span>💡</span>
+                <div><strong>Tip:</strong> Clear, well-structured instructions ensure consistent and trustworthy
+                    responses.</div>
+            </div>
+
+            <h3>Step D — Add Web-Based Knowledge Source</h3>
+            <ol>
+                <li>Navigate to <strong>Knowledge</strong> → <strong>Add knowledge source</strong>.</li>
+                <li>Select <strong>Website</strong>.</li>
+                <li>URL: <code>https://www.bajajgeneralinsurance.com/</code></li>
+            </ol>
+
+            <div class="callout important">
+                <span>⚠️</span>
+                <div><strong>Important:</strong> Limiting crawl depth helps balance coverage with relevance.</div>
+            </div>
+
+            <h2 id="summary">🔁 Summary of Learnings</h2>
+            <ul>
+                <li>Built a declarative Copilot Studio agent</li>
+                <li>Configured a professional insurance persona</li>
+                <li>Grounded responses using web-based knowledge</li>
+            </ul>
+        </article>
+
+        <!-- Right Sidebar (ToC) -->
+        <aside class="sidebar">
+            <h4 style="margin-bottom: 16px; border-bottom: 2px solid var(--color-primary); display: inline-block;">On
+                this page</h4>
+            <nav>
+                <a href="#introduction" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Introduction</a>
+                <a href="#concepts" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Core
+                    Concepts</a>
+                <a href="#instructions" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Instructions</a>
+                <a href="#summary" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">Summary</a>
+            </nav>
+        </aside>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        let timerInterval;
+        let seconds = 0;
+
+        function startLab() {
+            // Start timer
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+
+            // UI Updates
+            document.getElementById('btnStart').disabled = true;
+            const btnEnd = document.getElementById('btnEnd');
+            btnEnd.disabled = false;
+            btnEnd.classList.add('highlight');
+
+            // Scroll to content
+            document.getElementById('instructions').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateTimer() {
+            seconds++;
+            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            document.getElementById('mainTimer').textContent = `${h}:${m}:${s}`;
+        }
+
+        function endLab() {
+            clearInterval(timerInterval);
+            const finalTime = document.getElementById('mainTimer').textContent;
+
+            // Show Confetti
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#0078d4', '#00bcff', '#ffffff']
+            });
+
+            // Show Summary
+            document.getElementById('progressBox').style.display = 'none';
+            document.getElementById('summaryBox').style.display = 'block';
+            document.getElementById('finalTime').textContent = finalTime;
+
+            // Disable end button
+            document.getElementById('btnEnd').disabled = true;
+            document.getElementById('btnEnd').classList.remove('highlight');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+            applyTheme(target);
+        }
+
+        function applyTheme(theme) {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+
+            if (theme === 'dark') {
+                icon.innerText = '☀️';
+                text.innerText = 'Light Mode';
+            } else {
+                icon.innerText = '🌙';
+                text.innerText = 'Dark Mode';
+            }
+        }
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+
+        // Scroll Progress
+        window.onscroll = function () {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            const fill = document.getElementById("progressFill");
+            if (fill) {
+                fill.style.width = scrolled + "%";
+                document.getElementById("progressText").textContent = Math.round(scrolled) + "% Completed";
+            }
+        };
+    </script>
+</body>
+
+</html>
