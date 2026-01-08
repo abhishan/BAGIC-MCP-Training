@@ -422,7 +422,7 @@
                 <div class="summary-item">
                     <span class="summary-label">Badge Earned</span>
                     <div class="badge-display">
-                        <span class="badge-icon">🎖️</span>
+                        <span class="badge-icon">🥋</span>
                         <span class="summary-value">Copilot White Belt</span>
                     </div>
                 </div>
@@ -687,12 +687,17 @@
         <img class="lightbox-content" id="lightbox-img">
     </div>
 
+    <script src="../js/progress.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         let timerInterval;
         let seconds = 0;
 
+
         function startLab() {
+            // Track lab attempt
+            startLabAttempt('lab01');
+
             // Start timer
             if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(updateTimer, 1000);
@@ -718,6 +723,9 @@
         function endLab() {
             clearInterval(timerInterval);
             const finalTime = document.getElementById('mainTimer').textContent;
+
+            // Save lab completion
+            completeLabAttempt('lab01', finalTime);
 
             // Show Confetti
             confetti({

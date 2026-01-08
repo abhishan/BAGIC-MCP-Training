@@ -88,12 +88,72 @@
         </section>
     </main>
 
+    <!-- My Progress Panel -->
+    <div id="progressPanel" class="progress-panel">
+        <div class="progress-panel-content">
+            <div class="panel-header">
+                <h3>📊 My Progress</h3>
+                <button class="close-btn" onclick="toggleProgressPanel()" aria-label="Close Panel">×</button>
+            </div>
+
+            <div class="progress-circle-container">
+                <svg class="progress-ring" width="120" height="120">
+                    <circle class="progress-ring-bg" cx="60" cy="60" r="54" />
+                    <circle id="progressCircle" class="progress-ring-fill" cx="60" cy="60" r="54" />
+                </svg>
+                <div class="progress-percentage" id="progressPercentage">0%</div>
+            </div>
+
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Labs Completed</div>
+                        <div class="stat-value" id="labsCompleted">0/4</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🔄</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Total Attempts</div>
+                        <div class="stat-value" id="totalAttempts">0</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-info">
+                        <div class="stat-label">Last Attempt</div>
+                        <div class="stat-value" id="lastAttemptTime">--:--:--</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="badges-section">
+                <h4>🏆 Badges Earned</h4>
+                <div id="badgesContainer" class="badges-grid">
+                    <!-- Badges will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <button class="reset-btn" onclick="handleResetProgress()">Reset Progress</button>
+        </div>
+    </div>
+
+    <!-- Progress Panel Toggle Button -->
+    <button id="progressToggle" class="progress-toggle" onclick="toggleProgressPanel()">
+        <span class="toggle-icon">📊</span>
+        <span class="toggle-text">My Progress</span>
+    </button>
+
     <footer>
         <div class="container">
             <p>&copy; 2026 Microsoft Copilot Studio Training. Built for Excellence.</p>
         </div>
     </footer>
 
+    <script src="js/progress.js"></script>
     <script>
         function toggleTheme() {
             const html = document.documentElement;
@@ -120,9 +180,37 @@
             }
         }
 
+
         // Initialize theme
         const savedTheme = localStorage.getItem('theme') || 'light';
         applyTheme(savedTheme);
+
+        // Progress Panel Functions
+        function toggleProgressPanel() {
+            const panel = document.getElementById('progressPanel');
+            const toggle = document.getElementById('progressToggle');
+
+            if (panel.classList.contains('open')) {
+                panel.classList.remove('open');
+                toggle.classList.remove('hidden');
+            } else {
+                panel.classList.add('open');
+                toggle.classList.add('hidden');
+                updateProgressPanelUI(); // Refresh data when opening
+            }
+        }
+
+        function handleResetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This action cannot be undone.')) {
+                resetProgress();
+                location.reload();
+            }
+        }
+
+        // Initialize progress panel on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            updateProgressPanelUI();
+        });
     </script>
 </body>
 

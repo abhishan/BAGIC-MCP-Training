@@ -422,7 +422,7 @@
                 <div class="summary-item">
                     <span class="summary-label">Badge Earned</span>
                     <div class="badge-display">
-                        <span class="badge-icon">🥋</span>
+                        <span class="badge-icon">🎖️</span>
                         <span class="summary-value">Copilot Green Belt</span>
                     </div>
                 </div>
@@ -436,7 +436,8 @@
             <h2 id="introduction">🌐 Introduction</h2>
             <p>In this lab, you will build a <strong>high-complexity Copilot Studio agent</strong> that performs
                 <strong>analytical question-and-answer operations on localized document data</strong> and automates
-                downstream actions.</p>
+                downstream actions.
+            </p>
             <p>The agent, <strong>ClaimsAssist</strong>, is designed to:</p>
             <ul>
                 <li>Analyze claims data from an uploaded Excel file</li>
@@ -750,12 +751,16 @@
         <img class="lightbox-content" id="lightbox-img">
     </div>
 
+    <script src="../js/progress.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         let timerInterval;
         let seconds = 0;
 
         function startLab() {
+            // Track lab attempt
+            startLabAttempt('lab02');
+
             // Start timer
             if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(updateTimer, 1000);
@@ -781,6 +786,9 @@
         function endLab() {
             clearInterval(timerInterval);
             const finalTime = document.getElementById('mainTimer').textContent;
+
+            // Save lab completion
+            completeLabAttempt('lab02', finalTime);
 
             // Show Confetti
             confetti({
