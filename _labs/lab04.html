@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 04: Build an Autonomous Regulatory Monitoring Agent | Copilot Studio Hub</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: var(--sticky-header-height);
+        }
+
+        :root {
+            --sticky-header-height: 250px;
+            /* Approximate height of sticky header + hero */
+        }
+
+        .sticky-top-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--color-bg);
+            box-shadow: var(--shadow-soft);
+        }
+
+        header {
+            border-bottom: none !important;
+            backdrop-filter: none !important;
+            background: transparent !important;
+        }
+
+        .lab-hero {
+            background: var(--color-bg-alt);
+            padding: 24px 0;
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 0;
+        }
+
+        .hero-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .hero-flex h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            color: var(--color-text);
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .hero-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 16px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .lab-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 40px;
+            padding-top: 40px;
+            align-items: start;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: calc(var(--sticky-header-height) + 20px);
+            height: calc(100vh - var(--sticky-header-height) - 40px);
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: 10px;
+        }
+
+        .lab-content {
+            background: var(--color-bg);
+            padding-bottom: 100px;
+        }
+
+        .lab-content h2 {
+            margin: 40px 0 20px;
+            font-size: 1.8rem;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 10px;
+        }
+
+        .lab-content h3 {
+            margin: 30px 0 15px;
+            font-size: 1.4rem;
+            color: var(--color-primary);
+        }
+
+        .callout {
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin: 24px 0;
+            border-left: 4px solid;
+            display: flex;
+            gap: 12px;
+        }
+
+        .callout.tip {
+            background: var(--beginner-bg);
+            border-color: var(--beginner-text);
+            color: var(--beginner-text);
+        }
+
+        .callout.important {
+            background: var(--advanced-bg);
+            border-color: var(--advanced-text);
+            color: var(--advanced-text);
+        }
+
+        .timer-display {
+            font-family: 'Outfit', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            background: var(--color-bg);
+            padding: 8px 20px;
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--color-primary);
+            min-width: 160px;
+            text-align: center;
+        }
+
+        .progress-box {
+            background: var(--color-bg-alt);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            margin-bottom: 24px;
+        }
+
+        .summary-box {
+            display: none;
+            background: linear-gradient(135deg, var(--beginner-bg), var(--intermediate-bg));
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            border: 2px solid var(--color-primary);
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .summary-box h4 {
+            margin-bottom: 16px;
+            color: var(--color-primary);
+            font-size: 1.2rem;
+        }
+
+        .summary-item {
+            margin-bottom: 12px;
+        }
+
+        .summary-label {
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+            display: block;
+        }
+
+        .summary-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--color-text);
+        }
+
+        .badge-display {
+            margin-top: 20px;
+            text-align: center;
+            padding: 16px;
+            background: var(--color-bg);
+            border-radius: var(--radius-md);
+            border: 1px dashed var(--color-primary);
+        }
+
+        .badge-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .btn-secondary {
+            background: var(--color-bg-alt);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary.highlight {
+            background: var(--advanced-bg);
+            color: var(--advanced-text);
+            border-color: var(--advanced-text);
+            box-shadow: 0 0 15px rgba(164, 38, 44, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-flex {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero-controls {
+                align-items: flex-start;
+            }
+
+            .lab-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+
+        /* 90% Width Adjustment */
+        .container {
+            max-width: 90% !important;
+            width: 90% !important;
+        }
+
+        .lab-layout {
+            grid-template-columns: 300px 1fr 300px;
+            gap: 60px;
+        }
+
+        /* Lightbox Styles */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+        }
+
+        .lightbox-content {
+            margin: auto;
+            display: block;
+            width: auto;
+            max-width: 85%;
+            max-height: 80vh;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+            animation: zoom 0.3s;
+        }
+
+        @keyframes zoom {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .lightbox .close {
+            position: absolute;
+            top: 25px;
+            right: 40px;
+            color: #f1f1f1;
+            font-size: 60px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .lightbox .close:hover,
+        .lightbox .close:focus {
+            color: var(--color-accent);
+            text-decoration: none;
+        }
+
+        .lab-image {
+            margin: 32px 0;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            box-shadow: var(--shadow-soft);
+            cursor: zoom-in;
+            transition: var(--transition);
+        }
+
+        .lab-image:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .lab-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .reflection-questions {
+            background: var(--color-bg-alt);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            margin-top: 24px;
+        }
+
+        .reflection-questions ul {
+            margin-top: 12px;
+            padding-left: 20px;
+        }
+
+        .reflection-questions li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sticky-top-header">
+        <header>
+            <div class="container header-content">
+                <div class="logo">
+                    <a href="../index.html"
+                        style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+                        <img src="../assets/SaxonLogo.png" alt="Saxon AI" style="height: 40px; width: auto;">
+                        <span>Copilot Studio Labs</span>
+                    </a>
+                </div>
+                <button class="theme-btn" onclick="toggleTheme()" id="themeSwitcher">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeText">Dark Mode</span>
+                </button>
+            </div>
+        </header>
+
+        <section class="lab-hero">
+            <div class="container">
+                <div class="hero-flex">
+                    <div>
+                        <h1>Build an Autonomous Regulatory Monitoring Agent Using Web-Based Knowledge</h1>
+                        <p class="subtitle">Lab 04: Creating an IRDAI Regulations Agent</p>
+                    </div>
+                    <div class="hero-controls">
+                        <div class="timer-display" id="mainTimer">00:00:00</div>
+                        <div class="button-group">
+                            <button id="btnStart" class="btn" onclick="startLab()">Start Training</button>
+                            <button id="btnEnd" class="btn btn-secondary" onclick="endLab()" disabled>End
+                                Training</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <main class="container lab-layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar" id="leftSidebar">
+            <div class="progress-box" id="progressBox">
+                <h4 style="margin-bottom: 8px;">Your Progress</h4>
+                <div class="progress-bar"
+                    style="height: 8px; background: var(--color-border); border-radius: 4px; margin: 12px 0; overflow: hidden;">
+                    <div id="progressFill"
+                        style="height: 100%; background: var(--color-primary); width: 0%; transition: width 0.3s ease;">
+                    </div>
+                </div>
+                <small id="progressText">0% Completed</small>
+
+                <div style="margin-top: 24px; font-size: 0.9rem;">
+                    <p><strong>Level:</strong> 200</p>
+                    <p><strong>Persona:</strong> Intermediate Maker</p>
+                    <p><strong>Duration:</strong> 25 mins</p>
+                    <hr style="margin: 15px 0; border: none; border-top: 1px solid var(--color-border);">
+                    <p style="color: var(--color-text-secondary); font-size: 0.85rem;"><strong>Purpose:</strong> After
+                        completing this lab, attendees will be able to create an autonomous Copilot Studio agent that
+                        independently monitors regulatory websites and delivers summarized compliance insights.</p>
+                </div>
+            </div>
+
+            <div class="summary-box" id="summaryBox">
+                <h4>🎉 Lab Completed!</h4>
+                <div class="summary-item">
+                    <span class="summary-label">Time Taken</span>
+                    <span class="summary-value" id="finalTime">00:00:00</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Badge Earned</span>
+                    <div class="badge-display">
+                        <span class="badge-icon">🥷</span>
+                        <span class="summary-value">Copilot Ninja</span>
+                    </div>
+                </div>
+                <button class="btn" onclick="window.location.href='../index.html'"
+                    style="width: 100%; margin-top: 20px;">Return to Hub</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <article class="lab-content" id="mainContent">
+            <h2 id="introduction">🌐 Introduction</h2>
+            <p>In this lab, you will build an <strong>autonomous Copilot Studio agent</strong> that proactively monitors
+                regulatory updates published by the <strong>Insurance Regulatory and Development Authority of India
+                    (IRDAI)</strong>.</p>
+            <p>The agent, <strong>IRDAI Regulations Agent</strong>, is designed to:</p>
+            <ul>
+                <li>Track regulatory circulars relevant to non-life insurers</li>
+                <li>Periodically scan authoritative web content</li>
+                <li>Generate concise summaries for compliance and regulatory teams</li>
+            </ul>
+            <p>This lab introduces <strong>autonomy configuration</strong>, enabling agents to act independently without
+                explicit user prompts.</p>
+
+            <h2 id="concepts">🎓 Core Concepts Overview</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                <thead>
+                    <tr style="background: var(--color-bg-alt);">
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Concept</th>
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Why it
+                            matters</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Autonomous Agent</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Operates independently by
+                            initiating tasks based on schedules or conditions rather than direct user input.</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Web-Based Knowledge Source
+                        </td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Enables agents to retrieve
+                            information from authoritative public websites.</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Autonomy Configuration</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Defines how and when an agent
+                            initiates actions such as periodic monitoring.</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Regulatory Monitoring</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Ensures organizations stay
+                            informed about compliance updates and policy changes.</td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Grounding</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Anchors summaries in official
+                            regulatory content to ensure accuracy and trust.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="prerequisites">✅ Prerequisites</h2>
+            <ul>
+                <li>Access to <strong>Microsoft Copilot Studio</strong></li>
+                <li>Permission to create <strong>autonomous agents</strong></li>
+                <li>Internet access to public regulatory websites</li>
+                <li>Familiarity with regulatory or compliance concepts (recommended)</li>
+            </ul>
+
+            <h2 id="targets">🎯 Summary of Targets</h2>
+            <p>By the end of this lab, you will be able to:</p>
+            <ul>
+                <li>Create an autonomous Copilot Studio agent</li>
+                <li>Configure a regulatory compliance persona</li>
+                <li>Add and scope web-based regulatory knowledge sources</li>
+                <li>Configure autonomous execution schedules</li>
+                <li>Validate regulatory summaries</li>
+                <li>Publish the agent for operational use</li>
+            </ul>
+
+            <h2 id="use-cases">🧩 Use Cases Covered</h2>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                <thead>
+                    <tr style="background: var(--color-bg-alt);">
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Step</th>
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Use Case
+                        </th>
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Value added
+                        </th>
+                        <th style="border: 1px solid var(--color-border); padding: 12px; text-align: left;">Effort</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">1</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Autonomous Agent with
+                            Web-Based Knowledge
+                        </td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">Enables proactive monitoring
+                            and summarization of regulatory circulars</td>
+                        <td style="border: 1px solid var(--color-border); padding: 12px;">25 min</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2 id="instructions">🛠️ Step-by-Step Instructions</h2>
+
+            <h3>Step 1 — Create the Autonomous Agent</h3>
+            <ol>
+                <li>Open <strong>Copilot Studio</strong>.</li>
+                <li>Select <strong>Create</strong> → <strong>Copilot</strong>.</li>
+                <li>Choose the <strong>Autonomous</strong> agent type.</li>
+                <li>Enter the following details:
+                    <ul>
+                        <li><strong>Name:</strong> IRDAI Regulations Agent</li>
+                        <li><strong>Description:</strong> Autonomous agent that monitors and summarizes IRDAI regulatory
+                            circulars for non-life insurers</li>
+                        <li><strong>Language:</strong> English</li>
+                    </ul>
+                </li>
+                <li>Select <strong>Create</strong>.</li>
+            </ol>
+            <div class="lab-image">
+                <img src="../labs/images/common/Advanced-Create.png" alt="Create Autonomous Agent">
+            </div>
+
+            <h3>Step 2 — Configure Persona and Instructions</h3>
+            <p>Navigate to <strong>Settings</strong> → <strong>Instructions</strong> and configure:</p>
+            <ul>
+                <li><strong>Persona:</strong> Regulatory Compliance Analyst</li>
+                <li><strong>Tone:</strong> Formal, precise, and compliance-focused</li>
+                <li><strong>Knowledge usage rule:</strong> Answer only using configured regulatory sources</li>
+                <li><strong>Content constraints:</strong> Do not interpret beyond published regulatory guidance</li>
+            </ul>
+
+            <div class="callout tip">
+                <span>💡</span>
+                <div><strong>Tip:</strong> A compliance-focused persona ensures summaries remain factual, neutral, and
+                    audit-friendly.</div>
+            </div>
+
+            <h3>Step 3 — Add Web-Based Knowledge Source</h3>
+            <ol>
+                <li>Navigate to <strong>Knowledge</strong> → <strong>Add knowledge source</strong>.</li>
+                <li>Select <strong>Website</strong>.</li>
+                <li>Configure the source:
+                    <ul>
+                        <li><strong>URL:</strong> https://irdai.gov.in/insurers/non-life-insurers</li>
+                        <li><strong>Domain:</strong> irdai.gov.in</li>
+                        <li><strong>Crawl depth:</strong> 2</li>
+                    </ul>
+                </li>
+                <li>Save the configuration and allow indexing to complete.</li>
+            </ol>
+
+            <div class="callout important">
+                <span>⚠️</span>
+                <div><strong>Important:</strong> Regulatory sites should be scoped carefully to avoid unrelated content.
+                </div>
+            </div>
+
+            <h3>Step 4 — Configure Autonomy</h3>
+            <ol>
+                <li>Navigate to <strong>Autonomy</strong> settings.</li>
+                <li>Enable <strong>Self-initiation</strong>.</li>
+                <li>Configure execution frequency:
+                    <ul>
+                        <li>Daily or Weekly (based on operational needs)</li>
+                    </ul>
+                </li>
+                <li>Save the autonomy configuration.</li>
+            </ol>
+
+            <h3>Step 5 — Validate Agent Queries</h3>
+            <ol>
+                <li>Open the <strong>Test Canvas</strong>.</li>
+                <li>Ask the agent: <em>Summarize latest IRDAI circulars</em></li>
+                <li>Validate that summaries:
+                    <ul>
+                        <li>Reference recent regulatory updates</li>
+                        <li>Are concise and accurate</li>
+                        <li>Reflect the defined compliance tone</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h3>Step 6 — Publish the Agent</h3>
+            <ol>
+                <li>Once validation is complete, select <strong>Publish</strong>.</li>
+                <li>Make the agent available to the intended channels or operational users.</li>
+            </ol>
+
+            <h3 style="text-align: center; color: var(--color-primary); margin: 40px 0;">🏅 Congratulations! Your IRDAI
+                Regulations Agent is now autonomous!</h3>
+
+            <h2 id="understanding">🧠 Test Your Understanding</h2>
+            <p><strong>Key takeaways:</strong></p>
+            <ul>
+                <li>Autonomous agents operate without direct user prompts</li>
+                <li>Scheduled execution is ideal for monitoring use cases</li>
+                <li>Regulatory agents must prioritize accuracy over interpretation</li>
+            </ul>
+
+            <div class="reflection-questions">
+                <h4>Reflection questions:</h4>
+                <ul>
+                    <li>How would you route summaries to compliance teams?</li>
+                    <li>What cadence best balances freshness and noise?</li>
+                    <li>How would you detect and handle regulatory website changes?</li>
+                </ul>
+            </div>
+
+            <h2 id="summary">🔁 Summary of Learnings</h2>
+            <ul>
+                <li>Created an autonomous Copilot Studio agent</li>
+                <li>Configured regulatory persona and tone</li>
+                <li>Grounded responses in authoritative web content</li>
+                <li>Enabled scheduled autonomous execution</li>
+                <li>Validated and published the agent</li>
+            </ul>
+
+            <h2 id="conclusions">📌 Conclusions & Recommendations</h2>
+            <div class="callout important">
+                <span>ℹ️</span>
+                <div>
+                    <strong>Important:</strong> When building autonomous regulatory agents:
+                    <ul style="margin-top: 8px;">
+                        <li>Scope knowledge sources narrowly</li>
+                        <li>Keep autonomy frequency intentional</li>
+                        <li>Validate summaries regularly</li>
+                        <li>Treat outputs as decision-support, not legal advice</li>
+                    </ul>
+                    <p style="margin-top: 12px;">This ensures autonomous agents remain trustworthy, compliant, and
+                        operationally valuable.</p>
+                </div>
+            </div>
+        </article>
+
+        <!-- Right Sidebar (ToC) -->
+        <aside class="sidebar">
+            <h4 style="margin-bottom: 16px; border-bottom: 2px solid var(--color-primary); display: inline-block;">On
+                this page</h4>
+            <nav>
+                <a href="#introduction" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">🌐
+                    Introduction</a>
+                <a href="#concepts" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">🎓
+                    Core
+                    Concepts</a>
+                <a href="#prerequisites" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">✅
+                    Prerequisites</a>
+                <a href="#targets" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">🎯
+                    Targets</a>
+                <a href="#use-cases" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">🧩
+                    Use
+                    Cases</a>
+                <a href="#instructions" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">🛠️
+                    Instructions</a>
+                <a href="#understanding" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">🧠
+                    Understanding</a>
+                <a href="#summary" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">🔁
+                    Summary</a>
+                <a href="#conclusions" class="toc-link"
+                    style="display: block; padding: 8px 0; color: var(--color-text-secondary); text-decoration: none; font-size: 0.9rem; transition: var(--transition);">📌
+                    Conclusions</a>
+            </nav>
+        </aside>
+    </main>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <span class="close">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+    </div>
+
+    <script src="../js/progress.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        let timerInterval;
+        let seconds = 0;
+
+
+        function startLab() {
+            // Track lab attempt
+            startLabAttempt('lab04');
+
+            // Start timer
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
+
+            // UI Updates
+            document.getElementById('btnStart').disabled = true;
+            const btnEnd = document.getElementById('btnEnd');
+            btnEnd.disabled = false;
+            btnEnd.classList.add('highlight');
+
+            // Scroll to content
+            //document.getElementById('instructions').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateTimer() {
+            seconds++;
+            const h = Math.floor(seconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((seconds % 3600) / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            document.getElementById('mainTimer').textContent = `${h}:${m}:${s}`;
+        }
+
+        function endLab() {
+            clearInterval(timerInterval);
+            const finalTime = document.getElementById('mainTimer').textContent;
+
+            // Save lab completion
+            completeLabAttempt('lab04', finalTime);
+
+            // Show Confetti
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#0078d4', '#00bcff', '#ffffff']
+            });
+
+            // Show Summary
+            document.getElementById('progressBox').style.display = 'none';
+            document.getElementById('summaryBox').style.display = 'block';
+            document.getElementById('finalTime').textContent = finalTime;
+
+            // Disable end button
+            document.getElementById('btnEnd').disabled = true;
+            document.getElementById('btnEnd').classList.remove('highlight');
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+            applyTheme(target);
+        }
+
+        function applyTheme(theme) {
+            const html = document.documentElement;
+            html.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+
+            if (theme === 'dark') {
+                icon.innerText = '☀️';
+                text.innerText = 'Light Mode';
+            } else {
+                icon.innerText = '🌙';
+                text.innerText = 'Dark Mode';
+            }
+        }
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+
+        // Scroll Progress
+        window.onscroll = function () {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            const fill = document.getElementById("progressFill");
+            if (fill) {
+                fill.style.width = scrolled + "%";
+                document.getElementById("progressText").textContent = Math.round(scrolled) + "% Completed";
+            }
+        };
+
+        // Lightbox Functionality
+        function openLightbox(src) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightbox.style.display = 'block';
+            lightboxImg.src = src;
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+
+        // Initialize Lightbox on all lab images
+        document.addEventListener('DOMContentLoaded', () => {
+            const labImages = document.querySelectorAll('.lab-image img');
+            labImages.forEach(img => {
+                img.parentElement.addEventListener('click', () => {
+                    openLightbox(img.src);
+                });
+            });
+
+            // Close lightbox with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeLightbox();
+            });
+        });
+    </script>
+</body>
+
+</html>
